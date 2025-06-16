@@ -10,7 +10,7 @@ from twilio_whatsapp import SendEmail, TwilioWhatsApp
 sheety_data = SheetyData()
 sheety_data.get_and_update_iataCodes()  # update iata codes in the sheety rows
 
-#
+# get updated flight deal sheet with iata codes
 username = os.environ.get('sheety_username')
 sheety_url = f'https://api.sheety.co/{username}/cheapFlightDeals/prices'
 the_sheety_header = sheety_header
@@ -22,3 +22,10 @@ flight_deal_data = sheety_response.json()['prices']
 for i in flight_deal_data:
     flight_search = FlightSearch(
         flight_deal_data[i]['iataCode'], flight_deal_data[i]['lowestPrice'])
+    flight_search.get_parameter_date()
+
+    twilio_whatsapp = TwilioWhatsApp()
+    twilio_whatsapp.send_whatsapp_message(flight_search.message)
+
+    send_mail = SendEmail
+    send_mail.send_email(flight_search.message)
