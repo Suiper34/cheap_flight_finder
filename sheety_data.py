@@ -50,7 +50,3 @@ class SheetyData:
                 url=sheety_put_request, json=iatacodes_parameter, headers=self.the_sheety_header)
             iatacodes_put_response.raise_for_status()
             print(iatacodes_put_response.text)
-
-
-sheety_data = SheetyData()
-sheety_data.get_and_update_iataCodes()
