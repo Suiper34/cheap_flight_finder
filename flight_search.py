@@ -37,9 +37,9 @@ class FlightSearch:
         }
         self.preferred_price = preferred_price
         self.flight_search_parameters: dict = {}
-        self.flight_offers_data = list
-        self.get_parameter_date()
+        self.flight_offers_data: list = []
         self.message: str = ''
+        self.get_parameter_date()
 
     def get_parameter_date(self,):
         """Convert a list of datetime objects to a list of strings in 'YYYY-MM-DD' format.
@@ -54,13 +54,29 @@ class FlightSearch:
 
             self.flight_search_parameters = {'originLocationCode': self.origin_code, 'destinationLocationCode': self.destination_code,
                                              'departureDate': date.strftime('%Y-%m-%d'), 'adults': 1, 'currencyCode': 'GHS', 'max': 5, }
-            flight_response = requests.get(
-                url=self.URL, headers=self.header, params=self.flight_search_parameters)
-            flight_response.raise_for_status()
-            self.flight_offers_data = flight_response.json()['data']
+            try:
+                flight_response = requests.get(
+                    url=self.URL, headers=self.header, params=self.flight_search_parameters, timeout=15)
+                flight_response.raise_for_status()
+                data = flight_response.json().get('data', [])
+            except Exception as e:
+                print(f"Error fetching flights for {date}: {e}")
+                continue
+            self.flight_offers_data = data
+            if not self.flight_offers_data:
+                continue
 
             # check if flight offer price meet or is less than preferred price
             for flight_dict in self.flight_offers_data:
-                if int(flight_dict['price']['total']) <= self.preferred_price:
-                    self.message += f"On {(flight_dict['itineraries'][0]['segments'][0]['departure']['at']).strip('T')},\nthere is flight moving from Kumasi to {self.destination_code}\nat a price of GHS {flight_dict['price']['total']}\nwhich meet the preferred price requirement.\n"
+                try:
+                    price = float(flight_dict['price']['total'])
+                except (KeyError, ValueError, TypeError):
+                    continue
+                if price <= self.preferred_price:
+                    try:
+                        flight_date = flight_dict['itineraries'][0]['segments'][0]['departure']['at'].split('T')[
+                            0]
+                    except (KeyError, IndexError):
+                        flight_date = 'Unknown date'
+                    self.message += f"On {flight_date},\nthere is flight moving from Kumasi to {self.destination_code}\nat a price of GHS {flight_dict['price']['total']}\nwhich meet the preferred price requirement.\n"
                     return self.message
