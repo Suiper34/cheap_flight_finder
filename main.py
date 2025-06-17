@@ -23,8 +23,8 @@ flight_deal_data = sheety_response.json()['prices']
 
 
 for flight_offer in flight_deal_data:
-    iata_code = flight_deal_data[flight_offer]['iataCode']
-    lowest_price = flight_deal_data[flight_offer]['lowestPrice']
+    iata_code = flight_offer['iataCode']
+    lowest_price = flight_offer['lowestPrice']
     if not iata_code or not lowest_price:
         print(f'Skipping flight offer {flight_offer} due to missing data.')
         continue
