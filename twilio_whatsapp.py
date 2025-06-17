@@ -8,7 +8,7 @@ from twilio.rest import Client
 class TwilioWhatsApp:
     """send WhatsApp messages using Twilio."""
 
-    def init__(self,):
+    def __init__(self,):
         """Initialize Twilio WhatsApp client."""
         self.account_sid = os.environ.get('whatsapp_account_sid')
         self.auth_token = os.environ.get('whatsapp_auth_token')
