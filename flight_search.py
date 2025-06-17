@@ -41,7 +41,7 @@ class FlightSearch:
         self.message: str = ''
         self.get_parameter_date()
 
-    def get_parameter_date(self,):
+    def get_parameter_date(self,) -> str:
         """Convert a list of datetime objects to a list of strings in 'YYYY-MM-DD' format.
             Gets flight offers data for a list of dates.
         """
@@ -56,7 +56,7 @@ class FlightSearch:
                                              'departureDate': date.strftime('%Y-%m-%d'), 'adults': 1, 'currencyCode': 'GHS', 'max': 5, }
             try:
                 flight_response = requests.get(
-                    url=self.URL, headers=self.header, params=self.flight_search_parameters, timeout=15)
+                    url=self.URL, headers=self.header, params=self.flight_search_parameters)
                 flight_response.raise_for_status()
                 data = flight_response.json().get('data', [])
             except Exception as e:
@@ -75,8 +75,9 @@ class FlightSearch:
                 if price <= self.preferred_price:
                     try:
                         flight_date = flight_dict['itineraries'][0]['segments'][0]['departure']['at'].split('T')[
-                            0]
+                            0]  # Splits the datetime string at the 'T' and takes the date part
                     except (KeyError, IndexError):
                         flight_date = 'Unknown date'
                     self.message += f"On {flight_date},\nthere is flight moving from Kumasi to {self.destination_code}\nat a price of GHS {flight_dict['price']['total']}\nwhich meet the preferred price requirement.\n"
-                    return self.message
+
+        return self.message  # return the messages containing flight details
