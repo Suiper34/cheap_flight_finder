@@ -20,7 +20,7 @@ today = datetime.now()
 
 tomorrow = today + timedelta(days=1)  # tomorrow's date
 
-six_months_later = tomorrow + timedelta(days=6*30)  # Approximation of 6 months
+six_months_later = tomorrow + timedelta(days=3*30)  # Approximation of 3 months
 
 # Generate a list of dates from tomorrow to six months later
 date_list = [tomorrow + timedelta(days=i)
