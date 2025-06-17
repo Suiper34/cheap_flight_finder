@@ -1,5 +1,6 @@
 import os
 from datetime import datetime, timedelta
+from time import sleep
 
 import requests
 
@@ -80,4 +81,6 @@ class FlightSearch:
                         flight_date = 'Unknown date'
                     self.message += f"On {flight_date},\nthere is flight moving from Kumasi to {self.destination_code}\nat a price of GHS {flight_dict['price']['total']}\nwhich meet the preferred price requirement.\n"
 
-        return self.message  # return the messages containing flight details
+            sleep(1.5)  # delay 1.5secs to avoid hitting API rate limits
+
+        return self.message  # return the message after collecting all matching flights
