@@ -8,6 +8,8 @@ from sheety_data import SheetyData
 from twilio_whatsapp import SendEmail, TwilioWhatsApp
 
 MAX_MESSAGES = 10
+# the max length of Twilio WhatsApp message is 1600 characters
+MAX_TWILIO_MESSAGE_LENGTH = 1600
 sent_count = 0
 
 sheety_data = SheetyData()
@@ -43,6 +45,13 @@ for flight_offer in flight_deal_data:
         if sent_count >= MAX_MESSAGES:
             print("Reached message sending limit.")
             break
+
+        # check if message length exceeds Twilio's limit then truncate it
+        if len(flight_search.message) > MAX_TWILIO_MESSAGE_LENGTH:
+            print("Message too long for Twilio, truncating.")
+            flight_search.message = flight_search.message[:
+                                                          MAX_TWILIO_MESSAGE_LENGTH - 3] + "..."
+
         twilio_whatsapp = TwilioWhatsApp()
         try:
             twilio_whatsapp.send_whatsapp_message(flight_search.message)
